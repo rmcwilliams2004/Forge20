@@ -1,0 +1,12 @@
+fastapi
+uvicorn
+numpy
+trimesh
+pydantic
+python-multipart
+opencv-python
+genesis
+torch
+torchvision
+tensorflow
+tensorboard

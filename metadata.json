@@ -1,0 +1,11 @@
+{
+  "name": "Remix: new Forge AI: Reverse Engineering v 16.9",
+  "description": "An AI-powered platform for reverse engineering and product analysis. Transform product concepts into detailed reports, documentation, and innovative redesign proposals.",
+  "requestFramePermissions": [
+    "microphone",
+    "camera"
+  ],
+  "capabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

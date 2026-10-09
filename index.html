@@ -1,0 +1,114 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Remix: new Forge AI: Reverse Engineering v 16.9</title>
+    <meta name="description" content="An AI-powered platform for reverse engineering and product analysis. Transform product concepts into detailed reports, documentation, and innovative redesign proposals." />
+    <meta property="og:title" content="Remix: new Forge AI: Reverse Engineering v 16.9" />
+    <meta property="og:description" content="An AI-powered platform for reverse engineering and product analysis. Transform product concepts into detailed reports, documentation, and innovative redesign proposals." />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            colors: {
+              'brand-cyan': '#0891b2',
+              'brand-dark': '#0f172a',
+              'brand-light': '#f8fafc',
+            }
+          }
+        }
+      }
+    </script>
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(5px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .animate-fade-in {
+        animation: fadeIn 0.3s ease-out forwards;
+      }
+      
+      .tour-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+      }
+      
+      .tour-popover {
+        position: absolute;
+        background-color: #ffffff; 
+        color: #1e293b; 
+        border: 1px solid #0891b2; 
+        border-radius: 12px;
+        padding: 20px;
+        max-width: 350px;
+        z-index: 1001;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+      }
+
+      .dark .tour-popover {
+        background-color: #1e293b;
+        color: #f1f5f9;
+        border-color: #0891b2;
+      }
+      
+      .tour-highlight {
+        position: relative;
+        z-index: 1000;
+        border-radius: 8px;
+        box-shadow: 0 0 0 9999px rgba(0,0,0,0.5);
+      }
+      
+      /* Standardized scrollbar for readability */
+      .custom-scrollbar::-webkit-scrollbar {
+        width: 8px;
+      }
+      .custom-scrollbar::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+      }
+      .dark .custom-scrollbar::-webkit-scrollbar-thumb {
+        background: #475569;
+      }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/pyodide/v0.25.1/full/pyodide.js"></script>
+    <script type="importmap">
+    {
+      "imports": {
+        "@google/genai": "https://aistudiocdn.com/@google/genai@^1.22.0",
+        "react/": "https://aistudiocdn.com/react@^19.2.0/",
+        "react": "https://aistudiocdn.com/react@^19.2.0",
+        "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+        "three": "https://cdn.jsdelivr.net/npm/three@0.166.1/build/three.module.js",
+        "three/examples/jsm/controls/OrbitControls.js": "https://cdn.jsdelivr.net/npm/three@0.166.1/examples/jsm/controls/OrbitControls.js",
+        "three/": "https://aistudiocdn.com/three@^0.180.0/",
+        "idb": "https://cdn.jsdelivr.net/npm/idb@8/+esm",
+        "@pdfme/generator": "https://cdn.jsdelivr.net/npm/@pdfme/generator@5.1.0/+esm",
+        "@pdfme/common": "https://cdn.jsdelivr.net/npm/@pdfme/common@5.1.0/+esm",
+        "lucide-react": "https://cdn.jsdelivr.net/npm/lucide-react@0.344.0/dist/esm/lucide-react.js"
+      }
+    }
+    </script>
+  <link rel="stylesheet" href="/index.css">
+</head>
+  <body class="bg-gray-50 dark:bg-brand-dark text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div id="root"></div>
+    <script type="module" src="/index.tsx"></script>
+  </body>
+</html>
