@@ -1,0 +1,38 @@
+{
+  "facility": "SynapseForge Autonomous Engineering & Precision Prototyping Hub",
+  "registry_version": "2026.4",
+  "equipment_inventory": [
+    {
+      "code": "EQ-HERMLE-C42",
+      "name": "Hermle C42 MT Dynamic 5-Axis Mill-Turn Center",
+      "type": "5_AXIS_CNC",
+      "work_envelope_mm": {"x": 800, "y": 800, "z": 550},
+      "max_spindle_rpm": 18000,
+      "positioning_accuracy_um": 5.0,
+      "repeatability_um": 2.5,
+      "coolant": "High-Pressure Cryogenic CO2 / Flood Emulsion 80 Bar",
+      "qualified_materials": ["Ti-6Al-4V Grade 5", "Inconel 718", "Al 7075-T651", "316L Stainless"]
+    },
+    {
+      "code": "EQ-EOS-M290",
+      "name": "EOS M 290 Direct Metal Laser Sintering (DMLS) Cell",
+      "type": "METAL_3D_PRINTER",
+      "build_volume_mm": {"x": 250, "y": 250, "z": 325},
+      "laser_type": "400W Yb-Fiber Laser",
+      "layer_thickness_um": 30,
+      "inert_gas": "Argon 99.999% purity (O2 < 100 ppm)",
+      "qualified_materials": ["Ti64 Grade 23", "NickelAlloy 718", "AlSi10Mg"]
+    },
+    {
+      "code": "EQ-CHAMBER-PRECISION-01",
+      "name": "Precision Environmental Controlled Chamber (Optoelectronic & Fluidic Hermetic Bonding)",
+      "type": "CONTROLLED_ENVIRONMENT_CHAMBER",
+      "dimensions_mm": {"x": 6000, "y": 4000, "z": 2800},
+      "particle_limit_0_5um": 3520,
+      "differential_pressure_pa": 18.5,
+      "air_cleanliness": "Class 5 Controlled Environment",
+      "temperature_stability_c": "+/- 0.2",
+      "rh_stability_pct": "+/- 2.0"
+    }
+  ]
+}

@@ -1,9 +1,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { Project, ProjectVersion, FactionId, ProjectIndexEntry, AnalysisResult, IngestedDocument, ProjectTask } from '../types';
-
-const INDEX_STORAGE_KEY = 'sf_projects_index';
-const PROJECT_PREFIX = 'sf_project_';
+import { backendApiService } from '../services/backendApiService';
 
 const getProjectKeywords = (projectHistory: ProjectVersion[]): string => {
     const keywords: (string | undefined)[] = [];
@@ -54,24 +52,27 @@ export const useProjects = () => {
     const [fullProjectStore, setFullProjectStore] = useState<Map<string, Project>>(new Map());
     const [activeProject, setActiveProject] = useState<Project | null>(null);
 
-    // HYDRATION: Load index from localStorage on mount
+    // HYDRATION: Load index from unified FastAPI backend on mount
     useEffect(() => {
-        const savedIndex = localStorage.getItem(INDEX_STORAGE_KEY);
-        if (savedIndex) {
-            try {
-                setProjectsIndex(JSON.parse(savedIndex));
-            } catch (e) {
-                console.error("Failed to hydrate project index:", e);
+        let isMounted = true;
+        backendApiService.getProjectsIndex().then(index => {
+            if (isMounted && index && index.length > 0) {
+                setProjectsIndex(index);
             }
-        }
+        }).catch(e => {
+            console.error("Failed to hydrate project index from backend:", e);
+        });
+        return () => { isMounted = false; };
     }, []);
 
     const updateProjectInStores = useCallback((project: Project) => {
-        // 1. Update Memory Store
+        // 1. Update In-Memory Store
         setFullProjectStore(prev => new Map(prev).set(project.id, project));
         
-        // 2. Persist Full Project Data
-        localStorage.setItem(`${PROJECT_PREFIX}${project.id}`, JSON.stringify(project));
+        // 2. Persist to Unified FastAPI Backend
+        backendApiService.saveProject(project).catch(err => {
+            console.warn("Backend project sync notice:", err);
+        });
 
         // 3. Update Index State
         const { history, inspirationalImageHistory, knowledgeBase, tasks, ...indexEntry } = project;
@@ -82,9 +83,6 @@ export const useProjects = () => {
             const nextIndex = prev.some(p => p.id === project.id)
                 ? prev.map(p => p.id === project.id ? newIndexEntry : p)
                 : [newIndexEntry, ...prev];
-            
-            // 4. Persist Index
-            localStorage.setItem(INDEX_STORAGE_KEY, JSON.stringify(nextIndex));
             return nextIndex;
         });
 
@@ -110,11 +108,12 @@ export const useProjects = () => {
             return next;
         });
         
-        localStorage.removeItem(`${PROJECT_PREFIX}${projectId}`);
+        backendApiService.deleteProject(projectId).catch(err => {
+            console.warn("Backend project delete notice:", err);
+        });
 
         setProjectsIndex(prev => {
             const nextIndex = prev.filter(p => p.id !== projectId);
-            localStorage.setItem(INDEX_STORAGE_KEY, JSON.stringify(nextIndex));
             return nextIndex;
         });
 
@@ -123,20 +122,15 @@ export const useProjects = () => {
         }
     };
     
-    const onSelectProject = (projectId: string) => {
+    const onSelectProject = async (projectId: string) => {
         // Try memory first
         let fullProject = fullProjectStore.get(projectId);
         
-        // Fallback to localStorage
+        // Fallback to FastAPI backend
         if (!fullProject) {
-            const saved = localStorage.getItem(`${PROJECT_PREFIX}${projectId}`);
-            if (saved) {
-                try {
-                    fullProject = JSON.parse(saved);
-                    setFullProjectStore(prev => new Map(prev).set(projectId, fullProject!));
-                } catch (e) {
-                    console.error("Critical: Project data corruption for node:", projectId);
-                }
+            fullProject = await backendApiService.getProject(projectId) || undefined;
+            if (fullProject) {
+                setFullProjectStore(prev => new Map(prev).set(projectId, fullProject!));
             }
         }
 
@@ -207,7 +201,7 @@ export const useProjects = () => {
     }, [activeProject, updateProjectInStores]);
 
     const updateProjectDetails = useCallback((projectId: string, details: Partial<{ name: string; description: string; tags: string[] }>) => {
-         const project = fullProjectStore.get(projectId) || JSON.parse(localStorage.getItem(`${PROJECT_PREFIX}${projectId}`) || 'null');
+         const project = fullProjectStore.get(projectId);
          if (!project) return;
 
          const updatedProject = {

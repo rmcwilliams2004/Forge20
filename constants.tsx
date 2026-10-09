@@ -368,6 +368,13 @@ export const SUITE_NAVIGATION = [
       { id: 'cm4/tensorboard', name: 'TensorBoard Dashboard' },
       { id: 'cm4/pinns', name: 'PINNs & Physics Surrogate Lab' }
     ] 
+  },
+  {
+    id: 'cm5',
+    name: 'CM-5: Live Telemetry & Arbitrary Data Streams',
+    tools: [
+      { id: 'cm5/telemetry', name: 'Agnostic Telemetry & Stream Ingestion' }
+    ]
   }
 ];
 

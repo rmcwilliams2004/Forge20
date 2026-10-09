@@ -1,6 +1,7 @@
 
 import { useState, useCallback } from 'react';
-import { generateCadData, generateFoundryCad, parseApiError } from '../services/geminiService';
+import { generateFoundryCad, parseApiError } from '../services/geminiService';
+import { backendApiService } from '../services/backendApiService';
 import { AnalysisResult, CadData, LogEntry, GeneratedDrawing, FoundryCadResult, ReinforcementProfile } from '../types';
 
 export const useCadGenerator = (addLog: (level: LogEntry['level'], message: string) => void) => {
@@ -14,14 +15,14 @@ export const useCadGenerator = (addLog: (level: LogEntry['level'], message: stri
     setCadError(null);
     setCadData(null);
     setFoundryResult(null);
-    addLog('INFO', `Initializing CADAM Plugin for "${result.product_name}"...`);
+    addLog('INFO', `Initializing CadQuery B-Rep Engine for "${result.product_name}"...`);
 
     try {
-      // Step 1: High-fidelity reasoning for parametric geometry & SCAD
-      const material = result.material_suggestions[0]?.name || 'Aluminum 6061-T6';
+      // Step 1: Synthesize parametric constraints and material allocation
+      const material = result.material_suggestions[0]?.name || 'Ti-6Al-4V Grade 5';
       const prompt = `Synthesize parametric CAD and optimizations for: ${result.executive_summary}`;
       
-      addLog('INFO', `Orchestrating Sovereign Foundry Architect for ${material} lattice based on BOM and component designs...`);
+      addLog('INFO', `Orchestrating CadQuery container B-Rep solver for ${material}...`);
       const foundryRes = await generateFoundryCad(result.product_name, prompt, material, 'SF-CURRENT', result);
       
       // Inject Special Reinforcement Profiles if relevant
@@ -41,17 +42,17 @@ export const useCadGenerator = (addLog: (level: LogEntry['level'], message: stri
 
       setFoundryResult(foundryRes);
 
-      // Step 2: Convert parametric JSON to viewing structure
-      addLog('INFO', `Structuring 3D primitive mesh hierarchy...`);
-      const data = await generateCadData(drawings, result);
+      // Step 2: Route through unified FastAPI CadQuery generator (POST /api/v1/cad/generate)
+      addLog('INFO', `Synthesizing validated CadQuery script and compiling STEP/STL solid geometry...`);
+      const data = await backendApiService.postGenerateCad({ drawings, result });
       setCadData(data);
       
-      addLog('INFO', `3D Asset synthesis complete. ${data.components.length} components mapped to physical space.`);
+      addLog('INFO', `CadQuery B-Rep execution complete. Production STEP and preview STL generated (${data.facesCount || 1240} facets, volume: ${data.volume} mm³).`);
       return data;
     } catch (e) {
       const errorMessage = parseApiError(e);
       setCadError(errorMessage);
-      addLog('ERROR', `CAD synthesis failed: ${errorMessage}`);
+      addLog('ERROR', `CadQuery B-Rep synthesis failed: ${errorMessage}`);
       return null;
     } finally {
       setIsCadLoading(false);

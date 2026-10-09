@@ -38,7 +38,7 @@ const PhasePill = ({ phase }: { phase: string }) => {
   );
 };
 
-const ProjectCard = ({ project, onSelect }: { project: ProjectIndexEntry; onSelect: (id: string) => void }) => {
+const ProjectCard: React.FC<{ project: ProjectIndexEntry; onSelect: (id: string) => void }> = ({ project, onSelect }) => {
   const phases = ['Ingestion', 'Verification', 'HoloEngineering', 'Documentation', 'Sovereign bundle'];
   const phaseIndex = Math.floor((new Date().getTime() - new Date(project.updatedAt).getTime()) / (1000 * 60 * 60 * 24)) % phases.length;
   const currentPhase = phases[phaseIndex] || phases[0];

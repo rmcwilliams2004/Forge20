@@ -10,3 +10,6 @@ torch
 torchvision
 tensorflow
 tensorboard
+cadquery
+build123d
+scipy

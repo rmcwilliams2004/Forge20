@@ -485,7 +485,14 @@ export interface PhysicsTelemetry {
   max_stress: number;
   stability_index: number;
   max_stress_gpa: number;
-  thermal_state?: { hotspot_max: number };
+  thermal_state?: { 
+    hotspot_max: number;
+    hotspot_max_c?: number;
+    gradient_k_per_mm?: number;
+  };
+  courant_number?: number;
+  pde_residual?: number;
+  l2_error_pct?: number;
 }
 
 export interface PeakStressNode {
@@ -502,14 +509,25 @@ export interface VisualLayers {
 
 export interface PhysicsValidationResult {
   simulation_id: string;
-  status: 'STABLE' | 'MESH_RUPTURE' | 'THERMAL_OVERLOAD' | 'CRITICAL_SYSTEM_FAILURE';
+  status: 'STABLE' | 'MESH_RUPTURE' | 'THERMAL_OVERLOAD' | 'CRITICAL_SYSTEM_FAILURE' | 'SOLVING' | 'ACCEPTED' | 'COMPLETED' | 'FAILED';
   timestamp: string;
-  failure_telemetry: FailureTelemetry[] | null;
-  engine_handshake: string;
-  solver_path: string;
+  failure_telemetry?: FailureTelemetry[] | null;
+  engine_handshake?: string;
+  solver_path?: string;
   video_url?: string;
   telemetry?: PhysicsTelemetry;
   visual_layers?: VisualLayers;
+  job_id?: string;
+  current_step?: number;
+  total_steps?: number;
+  courant_number?: number;
+  residuals?: {
+    momentum: number;
+    continuity?: number;
+    energy?: number;
+  };
+  log_history?: string[];
+  convergence_achieved?: boolean;
 }
 
 export interface SimulationResult {
@@ -650,6 +668,41 @@ export interface Project extends ProjectIndexEntry {
   tasks: ProjectTask[];
 }
 
+export type ProjectSharePermission = 'view' | 'edit';
+
+export interface ProjectShareRecord {
+  id: string;
+  share_token: string;
+  project_id: string;
+  permission: ProjectSharePermission;
+  created_by?: string;
+  invited_email?: string;
+  access_count: number;
+  last_accessed_at?: string;
+  expires_at?: string;
+  is_revoked?: boolean;
+  created_at: string;
+  updated_at?: string;
+  share_url?: string;
+}
+
+export interface ProjectCollaborator {
+  id: string;
+  project_id: string;
+  share_token?: string;
+  user_email: string;
+  permission: ProjectSharePermission;
+  joined_at: string;
+  last_active?: string;
+}
+
+export interface SharedProjectPayload {
+  status: string;
+  permission: ProjectSharePermission;
+  project: Project;
+  share_record: ProjectShareRecord;
+}
+
 export type DeVinciState = 'idle' | 'connecting' | 'listening' | 'speaking' | 'thinking' | 'error' | 'paused' | 'reconnecting' | 'reconnect_failed';
 
 export interface TranscriptEntry {
@@ -698,6 +751,19 @@ export interface CadData {
     assemblyName: string;
     units: 'mm' | 'inches';
     components: CadComponent[];
+    stlUrl?: string;
+    stlData?: string;
+    stepUrl?: string;
+    stepData?: string;
+    cadqueryScript?: string;
+    kernel?: string;
+    volume?: number;
+    surfaceArea?: number;
+    massGrams?: number;
+    boundingBox?: { x: number; y: number; z: number };
+    dimensionalConstraints?: Record<string, any>;
+    facesCount?: number;
+    validationStatus?: string;
 }
 
 export type CadViewerTool = 'select' | 'measure' | 'section';
@@ -1127,5 +1193,32 @@ export interface TensorBoardRun {
     tensorCoreUtilization: number;
     opBreakdown: { name: string; percentage: number; timeMs: number }[];
   };
+}
+
+// ============================================================================
+// Domain-Agnostic Telemetry & Data Stream Ingestion Types
+// ============================================================================
+
+export interface GenericDataStream {
+  id: string;
+  name: string;
+  source_system: string;
+  protocol: 'SSE' | 'WEBSOCKET' | 'REST_POLL' | 'WEBHOOK' | 'MANUAL';
+  status: 'ACTIVE' | 'IDLE' | 'STALE' | 'OFFLINE';
+  last_heartbeat: string;
+  latency_ms: number;
+  sample_rate_hz: number;
+  metrics: Record<string, any>;
+  metadata: Record<string, any>;
+  raw_payload?: any;
+}
+
+export interface GenericStreamIngestPayload {
+  stream_id: string;
+  source_system?: string;
+  protocol?: string;
+  timestamp?: string;
+  metrics: Record<string, any>;
+  metadata?: Record<string, any>;
 }
 

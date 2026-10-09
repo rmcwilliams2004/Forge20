@@ -504,3 +504,5 @@ export const exportFullReportPDF = (project: Project, drawings: GeneratedDrawing
 
 export { exportComputeStakeholderReportPDF, aggregateHeatmapData } from './stakeholderReportService';
 export type { StakeholderReportParams, StakeholderMilestoneItem } from './stakeholderReportService';
+export { exportUnifiedDocumentPDF, exportGenericTelemetryPDF } from './unifiedPdfService';
+export type { UnifiedDocumentOptions, UnifiedDocumentType } from './unifiedPdfService';

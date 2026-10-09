@@ -1,8 +1,7 @@
 
 import { useState, useCallback } from 'react';
-import { generateTechnicalDrawingImage, parseApiError, generateDrawingFromImage } from '../services/geminiService';
+import { generateTechnicalDrawingImage, parseApiError, generateDrawingFromImage, Part } from '../services/geminiService';
 import { AnalysisResult, GeneratedDrawing, LogEntry } from '../types';
-import { Part } from '@google/genai';
 
 const fileToGenerativePart = async (file: File): Promise<Part> => {
   const base64 = await new Promise<string>((resolve, reject) => {

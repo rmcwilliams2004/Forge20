@@ -14,7 +14,7 @@ import { useProjects } from './hooks/useProjects';
 import { DeVinciModal } from './components/DeVinciModal';
 import { useDrawingGenerator } from './hooks/useDrawingGenerator';
 import { useCadGenerator } from './hooks/useCadGenerator';
-import { useDeVinci } from './hooks/useDeVinci';
+import { useDeVinci } from './hooks/useAudioAgent';
 import { 
     extractProjectDetailsFromVideoUrl,
     parseApiError,
@@ -49,6 +49,10 @@ import { useAnalysisPersistence } from './hooks/useAnalysisPersistence';
 import { SystemToast } from './components/SystemToast';
 import { dispatchMilestoneAlert } from './services/notificationService';
 import { NeuralWorkbench } from './components/ml/NeuralWorkbench';
+import { AgnosticTelemetryHub } from './components/telemetry/AgnosticTelemetryHub';
+import { backendApiService } from './services/backendApiService';
+import { ShareProjectModal } from './components/ShareProjectModal';
+import { Share2 } from 'lucide-react';
 
 const useRossAnalysis = (addLog: (level: LogEntry['level'], message: string) => void) => {
     const workerRef = useRef<Worker | null>(null);
@@ -255,7 +259,7 @@ export function App() {
   const { prompt, selectedFaction, selectedPersona, selectionMode, tags } = editorState;
   
   const [authenticatedUser, setAuthenticatedUser] = useState<User | null>(null);
-  const [viewMode, setViewMode] = useState<'app' | 'admin' | 'suite' | 'pricing' | 'account' | 'neural'>('app');
+  const [viewMode, setViewMode] = useState<'app' | 'admin' | 'suite' | 'pricing' | 'account' | 'neural' | 'telemetry'>('app');
   const [logs, setLogs] = useState<LogEntry[]>([]);
 
   const [isInitiationModalOpen, setIsInitiationModalOpen] = useState(false);
@@ -263,6 +267,14 @@ export function App() {
   const [isDeVinciOpen, setIsDeVinciOpen] = useState(false);
   const [isNeuralIngesting, setIsNeuralIngesting] = useState(false);
   const [isTechDocOpen, setIsTechDocOpen] = useState(false);
+
+  // Shared Project Session State
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
+  const [sharedSessionInfo, setSharedSessionInfo] = useState<{
+    token: string;
+    permission: 'view' | 'edit';
+    projectName: string;
+  } | null>(null);
 
   // Persistence Hook
   const { saveInProgressAnalysis, loadInProgressAnalysis, clearInProgressAnalysis } = useAnalysisPersistence();
@@ -272,6 +284,34 @@ export function App() {
     const project = overrideContext?.project || activeProject?.name || '';
     setLogs(prev => [...prev, { id: Date.now(), timestamp: new Date().toISOString(), level, message, user, context: project }]);
   }, [authenticatedUser, activeProject]);
+
+  // SHARED LINK HYDRATION: Detect ?share= or ?share_id= in URL and load from shared schema
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const urlParams = new URLSearchParams(window.location.search);
+    const token = urlParams.get('share') || urlParams.get('share_id');
+    if (!token) return;
+
+    addLog('INFO', `Connecting to shared database schema for token: ${token}...`);
+    backendApiService.getSharedProject(token)
+      .then(payload => {
+        if (payload?.project) {
+          loadProject(payload.project);
+          setProjectName(payload.project.name);
+          setSharedSessionInfo({
+            token,
+            permission: payload.permission,
+            projectName: payload.project.name
+          });
+          addLog('INFO', `Successfully imported shared project "${payload.project.name}" (${payload.permission.toUpperCase()} permission).`, {
+            project: payload.project.name
+          });
+        }
+      })
+      .catch(err => {
+        addLog('ERROR', `Failed to load shared project from database (${token}): ${err.message}`);
+      });
+  }, [loadProject, addLog]);
 
   // SESSION HYDRATION: Load in-progress work on mount
   useEffect(() => {
@@ -413,7 +453,7 @@ export function App() {
   const handleUpdateUser = (updatedUser: User) => {
       setAuthenticatedUser(prev => prev?.id === updatedUser.id ? updatedUser : prev);
       setUsersList(prev => prev.map(u => u.id === updatedUser.id ? updatedUser : u));
-      localStorage.setItem(`sf_profile_${updatedUser.id}`, JSON.stringify(updatedUser));
+      backendApiService.saveUserProfile(updatedUser).catch(err => console.warn('Profile sync notice:', err));
   };
 
   const handleDeleteUser = (userId: string) => {
@@ -506,6 +546,46 @@ export function App() {
         onSwitchView={(v) => setViewMode(v as any)}
       />
 
+      {sharedSessionInfo && (
+        <div className="w-full bg-indigo-950/90 border-b border-indigo-500/40 px-6 py-2.5 flex items-center justify-between text-xs text-indigo-200 backdrop-blur-md shadow-md animate-fade-in z-30">
+          <div className="flex items-center gap-3">
+            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-mono font-black uppercase tracking-wider ${
+              sharedSessionInfo.permission === 'edit'
+                ? 'bg-indigo-500 text-white shadow-sm shadow-indigo-500/50'
+                : 'bg-emerald-500 text-slate-950 font-bold'
+            }`}>
+              {sharedSessionInfo.permission} access
+            </span>
+            <span>
+              Connected to shared schema for <strong>{sharedSessionInfo.projectName}</strong>
+            </span>
+            <span className="text-gray-400 font-mono text-[11px] hidden sm:inline">
+              (Token: {sharedSessionInfo.token})
+            </span>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => setIsShareModalOpen(true)}
+              className="text-xs font-bold text-brand-cyan hover:underline flex items-center gap-1"
+            >
+              <Share2 className="w-3.5 h-3.5" /> Manage Share
+            </button>
+            <button
+              onClick={() => {
+                setSharedSessionInfo(null);
+                const url = new URL(window.location.href);
+                url.searchParams.delete('share');
+                url.searchParams.delete('share_id');
+                window.history.replaceState({}, '', url.toString());
+              }}
+              className="px-2.5 py-1 bg-slate-800 hover:bg-slate-700 text-gray-300 rounded-lg text-[11px] font-bold transition"
+            >
+              Exit Shared Mode
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="flex-1 flex flex-col overflow-y-auto">
         {viewMode === 'app' && (
           <div className="w-full bg-white dark:bg-slate-800 p-6 flex-shrink-0 border-b border-gray-200 dark:border-slate-700 shadow-sm transition-colors duration-300">
@@ -527,6 +607,7 @@ export function App() {
                         onCompareVersions={() => {}} disabled={isLoading} authenticatedUser={authenticatedUser}
                         onSaveToDrive={() => {}} onOpenFromDrive={() => {}} isSavingToDrive={false} isDriveAuthenticated={false}
                         addLog={addLog} onAddDocument={addIngestedDocument} onRemoveDocument={removeIngestedDocument}
+                        onOpenShareModal={() => setIsShareModalOpen(true)}
                     />
                 </div>
 
@@ -632,6 +713,10 @@ export function App() {
               onAddComputeEvent={(event) => setComputeEvents(prev => [event, ...prev])}
               onBackToApp={() => setViewMode('app')}
             />
+          ) : viewMode === 'telemetry' ? (
+            <AgnosticTelemetryHub
+              onBackToApp={() => setViewMode('app')}
+            />
           ) : null}
         </main>
         <Footer />
@@ -660,6 +745,14 @@ export function App() {
       />
 
       <TechnicalDocumentModal isOpen={isTechDocOpen} onClose={() => setIsTechDocOpen(false)} />
+
+      {/* Share Project Modal */}
+      <ShareProjectModal
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        project={activeProject}
+        currentUser={authenticatedUser}
+      />
 
       {/* Global Compute Milestone Notification Alert System */}
       <SystemToast onViewTimeline={() => setViewMode('app')} />

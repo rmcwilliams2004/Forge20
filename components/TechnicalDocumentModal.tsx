@@ -35,7 +35,7 @@ export const TechnicalDocumentModal = ({ isOpen, onClose }: TechDocModalProps) =
                         <ul className="list-disc pl-5 space-y-2">
                            <li><Code>useAnalysis</Code>: Orchestrates the primary analysis workflow, managing loading states and handling API calls to the Gemini model for generating the main report.</li>
                            <li><Code>useProjects</Code>: Manages the lifecycle of projects, including creation, versioning (history), selection, and deletion within the user's session.</li>
-                           <li><Code>useDeVinci</Code>: Powers the real-time, conversational AI feature by managing the Gemini Live API session, microphone input, audio output, and function call handling.</li>
+                           <li><Code>useAudioAgent</Code>: Powers the real-time, conversational bidirectional audio agent by managing Web Speech recognition, Gemini Live WebSocket sessions, microphone input, audio playback, and function call execution.</li>
                            <li><Code>useDrawingGenerator</Code>: Handles requests to the image generation models for creating technical drawings and concept art, managing individual loading/error states for each image.</li>
                         </ul>
                     </Section>
@@ -53,7 +53,7 @@ export const TechnicalDocumentModal = ({ isOpen, onClose }: TechDocModalProps) =
                      <Section title="Data Persistence">
                         <p>The application uses two primary methods for data persistence:</p>
                         <ul className="list-disc pl-5 space-y-2">
-                            <li><strong>Session Recovery:</strong> A lightweight version of the current analysis is saved to <Code>localStorage</Code> to allow users to resume their work after a page refresh. To avoid storage limits, generated images (base64) are excluded from this save.</li>
+                            <li><strong>Unified Backend Persistence:</strong> Project state, version history, and in-progress sessions are managed securely through the unified FastAPI backend (<Code>/api/v1/projects</Code> and <Code>/api/v1/state/in-progress</Code>), completely removing local client storage dependencies.</li>
                             <li><strong>File-Based Projects:</strong> Users can save their entire project, including all version history and generated assets, to a local <Code>.sfp.json</Code> file. This file can be opened in a future session to fully restore the project state.</li>
                         </ul>
                     </Section>

@@ -39,6 +39,7 @@ interface ProjectManagerProps {
     onAddDocument?: (doc: IngestedDocument) => void;
     onRemoveDocument?: (id: string) => void;
     addLog: (level: 'INFO' | 'WARN' | 'ERROR', message: string) => void;
+    onOpenShareModal?: () => void;
 }
 
 const formatDate = (isoString: string) => {
@@ -68,7 +69,7 @@ export const ProjectManager = ({
     onStartBrainstormFromPdf, isParsingForBrainstorm, onIdentifyImage, isIdentifyingImage, onOpenVideoImport, isParsingVideo, 
     onEditProject, onDeleteProject, onLoadVersion, onRevertVersion, onCompareVersions, disabled, authenticatedUser,
     onSaveToDrive, onOpenFromDrive, isSavingToDrive, isDriveAuthenticated,
-    onAddDocument, onRemoveDocument, addLog
+    onAddDocument, onRemoveDocument, addLog, onOpenShareModal
 }: ProjectManagerProps) => {
     const [projectToDelete, setProjectToDelete] = useState<Project | null>(null);
     const [searchTerm, setSearchTerm] = useState('');
@@ -169,15 +170,27 @@ export const ProjectManager = ({
         <div className="space-y-4">
             <div className="flex justify-between items-center mb-3">
                 <h2 className="text-xl font-semibold text-gray-900 dark:text-brand-light">Foundry Management</h2>
-                <div className="flex gap-2">
+                <div className="flex items-center gap-2">
                     {activeProject && (
-                        <button 
-                            onClick={onSaveProject}
-                            className="flex items-center gap-2 px-3 py-1.5 bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/40 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-brand-cyan hover:text-white transition-all shadow-lg shadow-cyan-900/10"
-                        >
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
-                            Export Sovereign Asset
-                        </button>
+                        <>
+                            <button
+                                onClick={onOpenShareModal}
+                                className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 border border-indigo-500/30 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-indigo-600 hover:text-white transition-all shadow-sm active:scale-95"
+                                title="Share Project via Unique Link (Shared Schema)"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3.5 h-3.5">
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z" />
+                                </svg>
+                                Share
+                            </button>
+                            <button 
+                                onClick={onSaveProject}
+                                className="flex items-center gap-2 px-3 py-1.5 bg-brand-cyan/20 text-brand-cyan border border-brand-cyan/40 rounded-lg text-[10px] font-black uppercase tracking-widest hover:bg-brand-cyan hover:text-white transition-all shadow-lg shadow-cyan-900/10"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2.5} stroke="currentColor" className="w-3 h-3"><path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 1 0-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 0 0 2.25-2.25v-6.75a2.25 2.25 0 0 0-2.25-2.25H6.75a2.25 2.25 0 0 0-2.25 2.25v6.75a2.25 2.25 0 0 0 2.25 2.25Z" /></svg>
+                                Export Sovereign Asset
+                            </button>
+                        </>
                     )}
                 </div>
             </div>

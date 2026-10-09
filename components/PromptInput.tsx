@@ -4,6 +4,7 @@ import { UseSetupAssistant } from '../hooks/useSetupAssistant';
 import { ENGINEERING_PHILOSOPHIES } from '../constants';
 import { RoiEditorModal } from './RoiEditorModal';
 import { usePromptValidator } from '../hooks/usePromptValidator';
+import { PreFlightRagPanel } from './analysis/PreFlightRagPanel';
 
 // Icon for cropping
 const CropIcon = ({className}: {className?: string}) => (
@@ -425,6 +426,25 @@ export const PromptInput = ({
           onClose={() => setRoiEditorState({ isOpen: false, file: null, fileIndex: null })}
           onCropComplete={handleCropComplete}
       />
+
+      {/* Engineering Intelligence Layer: Hybrid RAG Vault Pre-Flight Check */}
+      <PreFlightRagPanel
+        prompt={prompt}
+        onAdoptComponent={(comp) => {
+          onProjectNameChange(comp.title);
+          const adoptedPrompt = `Adopt verified component [${comp.reference_code}] ${comp.title} (${comp.material}). Dimensions: ${comp.metadata?.bounding_box_mm?.x}x${comp.metadata?.bounding_box_mm?.y}x${comp.metadata?.bounding_box_mm?.z}mm. Certified ${comp.metadata?.qualification}.`;
+          onPromptChange(adoptedPrompt);
+          if (comp.category && !tags.includes(comp.category.toLowerCase())) {
+            onTagsChange([...tags, comp.category.toLowerCase(), 'validated-cad']);
+          }
+        }}
+        onInjectConstraints={(constraintText) => {
+          onPromptChange(prompt ? `${prompt}\n\n[GOVERNING STANDARD CONSTRAINT]: ${constraintText}` : `[GOVERNING STANDARD CONSTRAINT]: ${constraintText}`);
+        }}
+        onProceedGenerative={onEngage}
+        isEngaging={isLoading}
+      />
+
       <div className="flex items-stretch gap-2">
         <button
           id="tour-step-4"

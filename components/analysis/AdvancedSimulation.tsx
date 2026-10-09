@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { BillOfMaterialsItem, SimulationResult, SimulationType, User, CadData, LogEntry } from '../../types';
 import { useSimulation } from '../../hooks/useSimulation';
 import { useTts } from '../../hooks/useTts';
-import { useDeVinci } from '../../hooks/useDeVinci';
+import { useDeVinci } from '../../hooks/useAudioAgent';
 import { 
   Mic, Play, Square, MessageSquare, Wrench, ArrowRight, Save, CheckCircle, 
   Activity, Wind, Thermometer, Radio, Zap, Layers, AlertTriangle, Loader2, Settings
@@ -239,7 +239,7 @@ export const AdvancedSimulation: React.FC<AdvancedSimulationProps> = ({
                             <div className="bg-gray-100 dark:bg-black/40 p-6 rounded-2xl border border-gray-200 dark:border-slate-700 font-mono text-xs space-y-2 relative overflow-hidden">
                                 {status.map((msg, i) => (
                                     <div key={i} className="text-cyan-600 dark:text-cyan-400 animate-fade-in flex items-center gap-2">
-                                        <span className="opacity-50">>></span> {msg}
+                                        <span className="opacity-50">&gt;&gt;</span> {msg}
                                     </div>
                                 ))}
                                 <div className="animate-pulse text-cyan-800 dark:text-cyan-200">_</div>

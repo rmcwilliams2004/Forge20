@@ -99,7 +99,7 @@ export const DiagnosticsPanel: React.FC<DiagnosticsPanelProps> = ({
                 nalLoad: nalPrecision === NalPrecision.FOUNDRY ? 98 : nalPrecision === NalPrecision.ANALYSIS ? 45 : 12,
                 biasLeakage: Math.random() > 0.98 ? Math.floor(Math.random() * 10) : prev.biasLeakage
             }));
-        }, 150).valueOf();
+        }, 150) as unknown as number;
 
         const handleForgeLog = (e: any) => {
             const msg = e.detail;

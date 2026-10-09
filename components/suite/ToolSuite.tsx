@@ -16,6 +16,7 @@ import { PyTorchStudio } from '../ml/PyTorchStudio';
 import { TensorFlowStudio } from '../ml/TensorFlowStudio';
 import { TensorBoardDashboard } from '../ml/TensorBoardDashboard';
 import { PinnsSurrogateLab } from '../ml/PinnsSurrogateLab';
+import { AgnosticTelemetryHub } from '../telemetry/AgnosticTelemetryHub';
 import { Material, FmeaItem, User } from '../../types';
 import { MOCK_FMEA_ITEMS } from '../../constants';
 
@@ -100,6 +101,9 @@ export const ToolSuite: React.FC<ToolSuiteProps> = ({ user, onUpdateUser }) => {
                 return <TensorBoardDashboard />;
             case 'cm4/pinns':
                 return <PinnsSurrogateLab />;
+            // CM-5: Live Telemetry & Arbitrary Data Streams
+            case 'cm5/telemetry':
+                return <AgnosticTelemetryHub />;
             default:
                 return <MaterialSelector user={user} onUpdateUser={onUpdateUser} onSelectForAnalysis={handleSelectMaterialForAnalysis} />;
         }

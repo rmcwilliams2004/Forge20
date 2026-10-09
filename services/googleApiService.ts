@@ -152,13 +152,14 @@ interface DriveFile {
     content: string; // JSON string of the project
 }
 
+let inMemoryDriveFiles: DriveFile[] = [];
+
 const getMockDriveFiles = (): DriveFile[] => {
-    const stored = localStorage.getItem(GOOGLE_DRIVE_FILES_KEY);
-    return stored ? JSON.parse(stored) : [];
+    return inMemoryDriveFiles;
 };
 
 const saveMockDriveFiles = (files: DriveFile[]) => {
-    localStorage.setItem(GOOGLE_DRIVE_FILES_KEY, JSON.stringify(files));
+    inMemoryDriveFiles = files;
 };
 
 export const saveProjectToDrive = async (project: Project): Promise<string> => {

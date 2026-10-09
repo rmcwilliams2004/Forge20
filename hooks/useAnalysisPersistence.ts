@@ -1,50 +1,35 @@
 import { useCallback } from 'react';
-import { openDB, IDBPDatabase } from 'idb';
 import { InProgressState } from '../types';
+import { backendApiService } from '../services/backendApiService';
 
-const DB_NAME = 'SynapseForge_SessionDB';
-const STORE_NAME = 'analysis_state';
-const KEY = 'current_session';
-
-const initDB = async (): Promise<IDBPDatabase> => {
-  return openDB(DB_NAME, 1, {
-    upgrade(db) {
-      if (!db.objectStoreNames.contains(STORE_NAME)) {
-        db.createObjectStore(STORE_NAME);
-      }
-    },
-  });
-};
-
+/**
+ * Persistence hook routing analysis session state through
+ * the unified FastAPI backend (/api/v1/state/in-progress)
+ * rather than client-side IndexedDB.
+ */
 export const useAnalysisPersistence = () => {
   const saveInProgressAnalysis = useCallback(async (state: InProgressState) => {
     try {
-      const db = await initDB();
-      // IndexedDB handles large objects (including large base64 visuals) 
-      // without the strict size limits of localStorage.
-      await db.put(STORE_NAME, state, KEY);
+      await backendApiService.saveInProgressState(state);
     } catch (error) {
-      console.error("Critical Persistence Failure: Could not save session to IndexedDB.", error);
+      console.error("Critical Persistence Failure: Could not save session to backend.", error);
     }
   }, []);
 
   const loadInProgressAnalysis = useCallback(async (): Promise<InProgressState | null> => {
     try {
-      const db = await initDB();
-      const savedState = await db.get(STORE_NAME, KEY);
-      return (savedState as InProgressState) || null;
+      return await backendApiService.loadInProgressState();
     } catch (error) {
-      console.error("Critical Persistence Failure: Could not load session from IndexedDB.", error);
+      console.error("Critical Persistence Failure: Could not load session from backend.", error);
       return null;
     }
   }, []);
 
   const clearInProgressAnalysis = useCallback(async () => {
     try {
-      const db = await initDB();
-      await db.delete(STORE_NAME, KEY);
+      await backendApiService.clearInProgressState();
     } catch (error) {
-      console.error("Critical Persistence Failure: Could not clear session in IndexedDB.", error);
+      console.error("Critical Persistence Failure: Could not clear session on backend.", error);
     }
   }, []);
 

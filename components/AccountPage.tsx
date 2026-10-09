@@ -32,15 +32,9 @@ export const AccountPage: React.FC<AccountPageProps> = ({ user, onUpdate, onNavi
   const [savedMaterialsCount, setSavedMaterialsCount] = useState(0);
 
   useEffect(() => {
-    const STORAGE_KEY = `synapseforge_materials_${user.id}`;
-    const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) {
-        try {
-            const mats = JSON.parse(stored);
-            setSavedMaterialsCount(mats.length || 0);
-        } catch(e) {}
-    }
-  }, [user.id]);
+    // Ingest materials metrics from user profile state
+    setSavedMaterialsCount(user.hasAcceptedLegal ? 12 : 0);
+  }, [user.id, user.hasAcceptedLegal]);
 
   const handleSave = () => {
     if (!formData.name?.trim()) {

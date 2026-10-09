@@ -648,7 +648,7 @@ export const TensorBoardDashboard: React.FC<TensorBoardDashboardProps> = ({
               </div>
 
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                {activeRuns[0]?.histograms && Object.entries(activeRuns[0].histograms).map(([layerName, bins]) => (
+                {activeRuns[0]?.histograms && Object.entries(activeRuns[0].histograms).map(([layerName, bins]: [string, any]) => (
                   <div key={layerName} className="bg-slate-900/90 rounded-xl border border-slate-800 p-5 shadow-xl">
                     <div className="flex items-center justify-between mb-4">
                       <h4 className="text-xs font-bold font-mono text-slate-200">{layerName}</h4>

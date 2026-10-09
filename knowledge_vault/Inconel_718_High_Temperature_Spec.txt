@@ -1,0 +1,22 @@
+AEROSPACE MATERIAL SPECIFICATION AMS 5662
+NICKEL ALLOY, CORROSION AND HEAT RESISTANT, BARS, FORGINGS, AND RINGS
+52.5Ni - 19Cr - 3.0Mo - 5.1Cb (Nb) - 0.90Ti - 0.50Al - 18Fe
+Consumable Electrode Melted, Solution Heat Treated, Precipitation Hardenable (Inconel 718)
+
+1. APPLICATION:
+Primarily for parts requiring high resistance to creep and stress-rupture up to 704°C (1300°F) and oxidation resistance up to 982°C (1800°F).
+Used for rocket thrust chambers, cryogenic injector coaxial sleeves, and turbine rotor hubs.
+
+2. TENSILE AND YIELD LIMITS (Aged Condition):
+- Tensile Ultimate Strength: 1,240 MPa (180 ksi).
+- 0.2% Offset Yield Strength: 1,034 MPa (150 ksi).
+- Elongation in 4D: 12% minimum.
+- Reduction of Area: 15% minimum.
+- Hardness: 36 to 44 HRC.
+- Density: 8.19 g/cm^3.
+- Young's Modulus: 200 GPa at 20°C, 172 GPa at 650°C.
+
+3. FABRICATION & ADDITIVE RULES:
+- Direct Metal Laser Sintering (DMLS) requires stress-relief vacuum anneal at 1065°C for 1 hour followed by two-stage precipitation aging (720°C / 8h + 620°C / 8h).
+- Machining requires rigid tooling with positive rake geometry and high-pressure flood coolant to mitigate severe work hardening.
+- Minimum allowable wall thickness for additively manufactured thin-wall injector channels: 0.80 mm.

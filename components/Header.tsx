@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Role, User, Milestone } from '../types';
 import { ThemeToggle } from './ThemeToggle';
-import { Bell, Box, ShieldCheck, Cpu, Flame, CheckCircle2, Trash2, ArrowRight } from 'lucide-react';
+import { Bell, Box, ShieldCheck, Cpu, Flame, CheckCircle2, Trash2, ArrowRight, Workflow } from 'lucide-react';
 
 interface HeaderProps {
     onStartTour: () => void;
@@ -9,12 +9,12 @@ interface HeaderProps {
     authenticatedUser: User | null;
     onLogout: () => void;
     onOpenProfile: () => void;
-    viewMode: 'app' | 'admin' | 'suite' | 'pricing' | 'account' | 'neural';
-    onSwitchView: (view: 'app' | 'admin' | 'suite' | 'pricing' | 'account' | 'neural') => void;
+    viewMode: 'app' | 'admin' | 'suite' | 'pricing' | 'account' | 'neural' | 'telemetry';
+    onSwitchView: (view: 'app' | 'admin' | 'suite' | 'pricing' | 'account' | 'neural' | 'telemetry') => void;
     onMobileDiagnostics?: () => void;
 }
 
-const ViewToggle = ({ mode, currentMode, onSwitch, icon, label }: { mode: 'app' | 'admin' | 'suite' | 'pricing' | 'account' | 'neural', currentMode: string, onSwitch: (v: any) => void, icon: React.ReactNode, label: string }) => {
+const ViewToggle = ({ mode, currentMode, onSwitch, icon, label }: { mode: 'app' | 'admin' | 'suite' | 'pricing' | 'account' | 'neural' | 'telemetry', currentMode: string, onSwitch: (v: any) => void, icon: React.ReactNode, label: string }) => {
     const isActive = mode === currentMode;
     return (
         <button
@@ -154,6 +154,13 @@ export const Header = ({ onStartTour, onOpenUserManual, authenticatedUser, onLog
                 onSwitch={onSwitchView} 
                 label="Neural Forge"
                 icon={<Flame className="w-4 h-4 text-orange-400" />}
+            />
+            <ViewToggle 
+                mode="telemetry" 
+                currentMode={viewMode} 
+                onSwitch={onSwitchView} 
+                label="Live Telemetry"
+                icon={<Workflow className="w-4 h-4 text-cyan-400" />}
             />
             {canAccessAdmin ? (
                 <>

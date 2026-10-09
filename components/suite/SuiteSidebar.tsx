@@ -7,7 +7,7 @@ interface SuiteSidebarProps {
 }
 
 export const SuiteSidebar: React.FC<SuiteSidebarProps> = ({ activeTool, onSelectTool }) => {
-  const [openModules, setOpenModules] = useState<Set<string>>(new Set(['cm1', 'cm2', 'cm3', 'cm4']));
+  const [openModules, setOpenModules] = useState<Set<string>>(new Set(['cm1', 'cm2', 'cm3', 'cm4', 'cm5']));
 
   const toggleModule = (moduleId: string) => {
     setOpenModules(prev => {

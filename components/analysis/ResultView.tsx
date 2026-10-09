@@ -223,7 +223,15 @@ export const ResultView: React.FC<ResultViewProps> = (props) => {
                     </div>
                 ) : (
                     <div className="space-y-4">
-                        <PhysicsViewport cadData={cadData} physicsResult={simulation.physicsResult} isPhysicsActive={simulation.isPhysicsActive} onAddSnapshot={props.onAddLocalSnapshot} />
+                        <PhysicsViewport 
+                            cadData={cadData} 
+                            physicsResult={simulation.physicsResult} 
+                            isPhysicsActive={simulation.isPhysicsActive} 
+                            activeJobId={simulation.activeJobId}
+                            liveStepLogs={simulation.liveStepLogs}
+                            onTriggerSimulation={() => simulation.runGenesisVerification(cadData)}
+                            onAddSnapshot={props.onAddLocalSnapshot} 
+                        />
                     </div>
                 )}
             </Section>
